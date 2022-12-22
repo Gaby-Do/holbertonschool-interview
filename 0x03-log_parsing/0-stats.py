@@ -1,53 +1,30 @@
 #!/usr/bin/python3
-
-"""
-Script that reads stdin line and computes metrics.
-Every 10 lines:
-- prints the status code and the number of times it appears
-- prints the sum of the files sizes
-"""
-import sys  # for sys.stdin
+""" Funct that count line by li"""
+import sys
 
 
-if __name__ == '__main__':  # if this is the main module
-
-    c = fileSize = 0  # initialize counters and file size to 0
-    statCount = {  # initialize a dictionary to store the status code and count
-        '200': 0, '301': 0, '400': 0, '401': 0,
-        '403': 0, '404': 0, '405': 0, '500': 0
-    }
-
-    # handle input from stdin line by line
-    def handle_input(statCount, fileSize):
-        print('File size: {}'.format(fileSize))
-        for key in sorted(statCount.keys()):
-            if statCount[key] == 0:
-                continue
-            # print status code and number of times it appears
-            print('{}: {}'.format(key, statCount[key]))
-
-    try:  # read stdin line by line and compute metrics
-        for line in sys.stdin:
-            c += 1
-            split = line.split(" ")  # split line by space
-            try:
-                # get status code and convert to int if possible
-                status = split[-2]
-                # get file size and convert to int if possible
-                fileSize += int(split[-1])
-
-                if status in statCount:
-                    statCount[status] += 1
-            # if any exception occurs, ignore the line and continue
-            except Exception:
-                pass
-
-            if c % 10 == 0:  # handle every 10 lines
-                handle_input(statCount, fileSize)
-
-        else:  # handle last 10 lines if there are less than 10 lines
-            handle_input(statCount, fileSize)
-    # handle keyboard interrupt and system exit
-    except (KeyboardInterrupt, SystemExit):
-        handle_input(statCount, fileSize)
-        raise  # raise exception to exit program
+i = 0
+FileSize = 0
+stats = {'200': 0, '301': 0, '400': 0, '401': 0,
+         '403': 0, '404': 0, '405': 0, '500': 0}
+code = ['200', '301', '400', '401', '403', '404', '405', '500']
+try:
+    for line in sys.stdin:
+        i += 1
+        sp = line.split(' ')
+        if len(sp) > 2:
+            FileSize += int(sp[-1])
+            if sp[-2] in stats:
+                stats[sp[-2]] += 1
+        if i % 10 == 0:
+            print("File size: {}".format(FileSize))
+            for f in code:
+                if stats[f]:
+                    print("{}: {}".format(f, stats[f]))
+except KeyboardInterrupt:
+    pass
+finally:
+    print("File size: {}".format(FileSize))
+    for f in code:
+        if stats[f]:
+            print("{}: {}".format(f, stats[f]))
